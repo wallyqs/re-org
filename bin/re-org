@@ -1,2 +1,29 @@
+# -*- mode: ruby -*-
+require 'docopt'
+require 're-org/ext'
 require 're-org'
-puts "hello"
+
+doc = <<OPTIONS
+
+re-org : A tool to help re-organize your texts written in Org mode
+
+Usage:
+  re-org new <name>
+  re-org completed
+
+Options:
+
+  -h --help               Show this screen.
+  --version               Show this version.
+OPTIONS
+
+begin 
+  require "pp"
+  cmd = Docopt::docopt(doc)
+rescue Docopt::Exit => e
+  puts e.message
+end
+exit 1 unless cmd
+
+o = ReOrg::Command.new(cmd)
+o.execute!

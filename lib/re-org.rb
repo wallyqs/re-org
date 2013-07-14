@@ -1,5 +1,3 @@
 require "re-org/version"
-
-module ReOrg
-
-end
+require "re-org/ext"
+require "re-org/command"
