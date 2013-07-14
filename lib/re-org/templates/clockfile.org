@@ -1,0 +1,9 @@
+# -*- mode: org -*-
+#+OPTIONS: ^:nil
+#+TITLE: <%= @org[:title] %>
+#+TODO: TODO STARTED | DONE CANCELED
+#+DATE: <%= Time.now.strftime("%Y-%m-%d") %>
+#+STARTUP: showeverything
+
+* [0/1] <%= @org[:org_date] %> 
+** TODO 
