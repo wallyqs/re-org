@@ -1,0 +1,10 @@
+# -*- mode: org -*-
+#+OPTIONS: ^:nil
+#+TITLE: <%= @org[:title] %>
+
+* <%= @org[:org_date] %>
+
+* COMMENT
+# Local Variables:
+# eval: (auto-fill-mode t)
+# End:

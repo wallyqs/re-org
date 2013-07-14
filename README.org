@@ -1,5 +1,13 @@
 * ReOrg
-** TODO Write a gem description
+
+An Org mode file organizer.
+
+** Motivation
+
+Instead of having tons of sparsed Org mode files everywhere,
+this project attemtps to give the Org mode writer a framework
+to re-organize the files in a less chaotic manner.
+
 ** Installation
 
 Add this line to your application's Gemfile:
@@ -20,7 +28,46 @@ Or install it yourself as:
     $ gem install re-org
 #+end_src
 
-** TODO Usage
+** Usage
+
+This library uses ~docopt~ so these are self-documenting:
+
+#+begin_src sh :results output
+cat bin/re-org
+#+end_src
+
+#+RESULTS:
+#+begin_example
+# -*- mode: ruby -*-
+require 'docopt'
+require 're-org'
+
+doc = <<OPTIONS
+
+re-org : A tool to help re-organize your texts written in Org mode
+
+Usage:
+  re-org new <name>
+  re-org completed
+
+Options:
+
+  -h --help               Show this screen.
+  --version               Show this version.
+OPTIONS
+
+begin 
+  require "pp"
+  cmd = Docopt::docopt(doc)
+rescue Docopt::Exit => e
+  puts e.message
+end
+exit 1 unless cmd
+
+o = ReOrg::Command.new(cmd)
+o.execute!
+#+end_example
+
 ** Contributing
 
 1. Fork it

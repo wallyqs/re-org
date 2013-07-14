@@ -1,6 +1,5 @@
 # -*- mode: ruby -*-
 require 'docopt'
-require 're-org/ext'
 require 're-org'
 
 doc = <<OPTIONS
