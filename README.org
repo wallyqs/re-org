@@ -12,32 +12,32 @@ to re-organize the files in a less chaotic manner.
 
 Add this line to your application's Gemfile:
 
-#+begin_src sh
+#+BEGIN_SRC sh
     gem 're-org'
-#+end_src
+#+END_SRC
 
 And then execute:
 
-#+begin_src sh
+#+BEGIN_SRC sh
     $ bundle
-#+end_src
+#+END_SRC
 
 Or install it yourself as:
 
-#+begin_src sh
+#+BEGIN_SRC sh
     $ gem install re-org
-#+end_src
+#+END_SRC
 
 ** Usage
 
 This library uses ~docopt~ so these are self-documenting:
 
-#+begin_src sh :results output
+#+BEGIN_SRC sh :results output
 cat bin/re-org
-#+end_src
+#+END_SRC
 
 #+RESULTS:
-#+begin_example
+#+BEGIN_EXAMPLE
 # -*- mode: ruby -*-
 require 'docopt'
 require 're-org'
@@ -66,7 +66,7 @@ exit 1 unless cmd
 
 o = ReOrg::Command.new(cmd)
 o.execute!
-#+end_example
+#+END_EXAMPLE
 
 ** Contributing
 
