@@ -1,0 +1,30 @@
+* ReOrg
+** TODO Write a gem description
+** Installation
+
+Add this line to your application's Gemfile:
+
+#+begin_src sh
+    gem 're-org'
+#+end_src
+
+And then execute:
+
+#+begin_src sh
+    $ bundle
+#+end_src
+
+Or install it yourself as:
+
+#+begin_src sh
+    $ gem install re-org
+#+end_src
+
+** TODO Usage
+** Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
