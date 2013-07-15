@@ -5,5 +5,5 @@
 #+DATE: <%= Time.now.strftime("%Y-%m-%d") %>
 #+STARTUP: showeverything
 
-* [0/1] <%= @org[:org_date] %> 
+* [0/1] <%= @org[:date] %> 
 ** TODO 

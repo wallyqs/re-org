@@ -1,5 +1,6 @@
 require 'erb'
 require 'fileutils'
+require 'org-ruby'
 
 module ReOrg
   class Command
@@ -10,11 +11,11 @@ module ReOrg
 
     def execute!
       case true
-      when @options['setup'] 
+      when @options['setup']
         prepare_directories
       when @options['new']
         new_file
-      when @options['everything']
+      when @options['by']
         reorganize_everything
       end
     end
@@ -23,9 +24,11 @@ module ReOrg
       prepare_directories
 
       @org[:title]    = @options["--title"] || 'Untitled'
+      @org[:template] = @options["<template>"]
+      @org[:notebook] = guess_notebook
       @org[:time]     = Time.now
-      @org[:type]     = @options["<template>"]      
-      @org[:filename] = Time.at(@org[:time]).strftime("#{fix_title(@org[:title])}-%Y-%m-%d-%s")
+      @org[:filename] = resolve_filename
+      @org[:date]     = Time.at(@org[:time]).strftime("[%Y-%m-%d %a]")
       @org[:file]     = File.expand_path(File.join(@org[:current_dir], "#{@org[:filename]}.org"))
 
       c = 1
@@ -34,10 +37,7 @@ module ReOrg
         @org[:filename] = Time.at(@org[:time]).strftime("%Y-%m-%d-%s-#{c}")
         @org[:file]     = File.expand_path(File.join(@org[:current_dir], "#{@org[:filename]}.org"))
       end
-
-      @org[:org_date] = Time.at(@org[:time]).strftime("[%Y-%m-%d %a]")
-      template =  @options["<template>"] || 'writing'
-
+      template =  @org[:template] || 'writing'
       template_file = File.expand_path("templates/#{template}.org", File.dirname(__FILE__))
       if not File.exists?(template_file)
         puts "Could not find template `#{template}.org' at #{template_file}".red
@@ -47,16 +47,27 @@ module ReOrg
       content = ERB.new(template).result(binding)
 
       File.open(@org[:file], 'w') {|f| f.puts content }
+      puts content.yellow if ENV['DEBUG']
       puts "Created a new writing at `#{@org[:file]}'".green
     end
 
-    def fix_title(title)
-      return nil unless title
-      title.gsub(/[\s.\/\\]/, '-').downcase
+    private
+    def slugify(name)
+      return nil unless name
+      name.gsub(/[\s.\/\\]/, '-').downcase
+    end
+
+    def guess_notebook
+      @options["--notebook"] || File.basename(File.expand_path('.'))
+    end
+
+    def resolve_filename
+      slug = slugify(@org[:notebook] || @org[:title])
+      Time.at(@org[:time]).strftime("#{slug}-%s")
     end
 
     def prepare_directories
-      current_dir = File.expand_path('./current', File.dirname('.'))
+      current_dir = File.expand_path('./orgs/current', File.dirname('.'))
       if not File.exists?(current_dir)
         puts "Creating working dir at `#{current_dir}'".green
         FileUtils.mkdir(current_dir)

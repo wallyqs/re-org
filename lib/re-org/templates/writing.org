@@ -4,9 +4,9 @@
 #+DATE: <%= Time.now.strftime("%Y-%m-%d") %>
 #+STARTUP: showeverything
 
-* <%= @org[:org_date] %>
+* <%= @org[:date] %> 
   :PROPERTIES:
-  :NOTEBOOK: drafts
+  :NOTEBOOK: <%= @org[:notebook] %>
   :END:
 
 
