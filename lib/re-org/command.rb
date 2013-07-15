@@ -16,8 +16,10 @@ module ReOrg
         prepare_directories
       when @options['new']
         new_file
-      when @options['notebook']
+      when @options['update-notebook']
         reorganize_notebook
+      when @options['compile-notebook']
+        compile_notebook
       when @options['status']
         show_status
       end
@@ -25,16 +27,20 @@ module ReOrg
 
     def show_status
       puts "============ CURRENT STATUS ============"
+      summary = Hash.new { |h,k| h[k] = [] }
       org_files = Dir["#{@org[:path]}/current/*"]
       org_files.each do |org_file|
         org_content = Orgmode::Parser.new(File.open(org_file).read)
         if org_content.in_buffer_settings["NOTEBOOK"]
-          puts "Writing for NOTEBOOK: #{org_content.in_buffer_settings["NOTEBOOK"]}".green
-          puts org_content.headlines.first
-        elsif not
-          puts "Without a NOTEBOOK defined: #{org_file}".yellow
-          puts org_content.headlines.first
-        end
+          summary[org_content.in_buffer_settings["NOTEBOOK"]] << org_content
+        else
+          puts "Org file without notebook defined: #{org_file}".yellow
+        end        
+      end
+
+      summary.each_pair do |notebook, orgs|
+        puts "#{orgs.count} writings for '#{notebook}' notebook.".green
+        orgs.each { |o| puts ["\t", o.headlines.first].join('')}
       end
     end
 
@@ -73,9 +79,8 @@ module ReOrg
       path = File.expand_path("#{@org[:path]}/#{@org[:notebook]}")
       FileUtils.mkdir_p(path)
 
-      # Fetch each one of the directories from the current folder
-      org_files = Dir["#{@org[:path]}/current/*"]
-      org_files.each do |org_file|
+      current_org_files = Dir["#{@org[:path]}/current/*"]
+      current_org_files.each do |org_file|
         org_content = Orgmode::Parser.new(File.open(org_file).read)
 
         # Put files with defined notebook in the right place
@@ -97,6 +102,59 @@ module ReOrg
           puts "Org file `#{org_file}' does not belong to any notebook.".yellow
         end
       end
+    end
+
+    def compile_notebook
+      @org[:notebook] = guess_notebook
+      @org[:title]    = @options["--title"] || 'Untitled'
+      notebook_org_files = Dir["#{@org[:path]}/#{@org[:notebook]}/*/*"]
+      if notebook_org_files.empty?
+        puts "No notebook files were found for `#{@org[:notebook]}'.".red
+        exit 1
+      end
+      full_org_file = []
+
+      # FIXME: Ideally, OrgRuby should be able to do something as follows
+      # to remove unwanted export features like COMMENT headlines:
+      # files.each { |o| Orgmode::Parser.new(File.open(o).read); content += o.to_org }
+      notebook_org_files.each do |org_file|
+        org_content = Orgmode::Parser.new(File.open(org_file).read)
+        org_content.headlines.each do |h|
+          full_org_file << h.body_lines
+        end
+      end
+
+      full_org_file_path = File.join(@org[:path], @org[:notebook], "#{@org[:notebook]}.org")
+      if File.exists?(full_org_file_path) and not @options['--force']
+        puts "Org file `#{full_org_file_path}' already exists. Use --force to overwrite.".red
+        exit 1
+      elsif @options['--force']
+        c = 1
+        backup_file = "#{full_org_file_path}.#{c}"
+        while File.exists?(backup_file)
+          backup_file = "#{full_org_file_path}.#{c}"
+          c += 1
+        end
+        puts "Saving backup of already compiled Org file at `#{backup_file}'".yellow
+        FileUtils.mv(full_org_file_path, backup_file)
+      end
+
+      template_file = File.expand_path("templates/notebook.org", File.dirname(__FILE__))
+      if not File.exists?(template_file)
+        puts "Could not find template `#{template}.org' at #{template_file}".red
+        exit 1
+      end
+      template = File.open(template_file).read
+      content = ERB.new(template).result(binding)
+
+      # At the headers first from the template
+      File.open(full_org_file_path, 'a') { |f| f.puts content }
+
+      # Merge all the headlines into the file
+      full_org_file.flatten.each do |h|
+        File.open(full_org_file_path, 'a') { |f| f.puts h }
+      end
+      puts "Compiled Org file `#{full_org_file_path}'".green
     end
 
     private

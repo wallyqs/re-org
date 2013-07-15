@@ -1,0 +1,8 @@
+# -*- mode: org -*-
+#+OPTIONS: ^:nil
+#+TITLE: <%= @org[:title] %>
+#+DATE: <%= Time.now.strftime("%Y-%m-%d") %>
+#+STARTUP: showeverything
+#+NOTEBOOK: <%= @org[:notebook] %>
+
+<%= @org[:content] %>
