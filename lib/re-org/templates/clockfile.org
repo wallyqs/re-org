@@ -1,9 +1,13 @@
 # -*- mode: org -*-
 #+OPTIONS: ^:nil
-#+TITLE: <%= @org[:title] %>
 #+TODO: TODO STARTED | DONE CANCELED
 #+DATE: <%= Time.now.strftime("%Y-%m-%d") %>
 #+STARTUP: showeverything
+#+NOTEBOOK: <%= @org[:notebook] %>
 
-* [0/1] <%= @org[:date] %> 
+* [0/1] <%= @org[:date] %>
+  :PROPERTIES:
+  :NOTEBOOK: <%= @org[:notebook] %>
+  :END: 
+
 ** TODO 

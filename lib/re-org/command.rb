@@ -7,6 +7,7 @@ module ReOrg
     def initialize(options)
       @options = options
       @org = { }
+      prepare_directories
     end
 
     def execute!
@@ -15,14 +16,13 @@ module ReOrg
         prepare_directories
       when @options['new']
         new_file
-      when @options['by']
-        reorganize_everything
+      when @options['notebook']
+        reorganize_notebook
       end
     end
 
     def new_file
-      prepare_directories
-
+      @org[:current_dir] = current_dir
       @org[:title]    = @options["--title"] || 'Untitled'
       @org[:template] = @options["<template>"]
       @org[:notebook] = guess_notebook
@@ -51,6 +51,37 @@ module ReOrg
       puts "Created a new writing at `#{@org[:file]}'".green
     end
 
+    def reorganize_notebook
+      @org[:notebook] = guess_notebook
+      path = File.expand_path("#{@org[:path]}/#{@org[:notebook]}")
+      FileUtils.mkdir_p(path)
+
+      # Fetch each one of the directories from the current folder
+      org_files = Dir["#{@org[:path]}/current/*"]
+      org_files.each do |org_file|
+        org_content = Orgmode::Parser.new(File.open(org_file).read)
+
+        # Put files with defined notebook in the right place
+        if org_content.in_buffer_settings["NOTEBOOK"] == @org[:notebook]
+          # Use the date of the file, otherwise use todays date
+          date = org_content.in_buffer_settings["DATE"] || Time.now.strftime("%Y-%m-%d")
+          date_dir = File.join(@org[:path], @org[:notebook], date)
+          FileUtils.mkdir_p(date_dir)
+          target_location = File.join(date_dir, File.basename(org_file))
+          if not File.exists?(target_location)
+            FileUtils.cp(org_file, target_location)
+            puts "Copying `#{org_file}' to `#{target_location}'".green
+          elsif @options["--force"]
+            puts "Force copy on `#{target_location}'".yellow
+          else
+            puts "There is already an Org file at `#{target_location}'. Skipped.".yellow
+          end
+        elsif not org_content.in_buffer_settings["NOTEBOOK"]
+          puts "Org file `#{org_file}' does not belong to any notebook.".yellow
+        end
+      end
+    end
+
     private
     def slugify(name)
       return nil unless name
@@ -58,7 +89,7 @@ module ReOrg
     end
 
     def guess_notebook
-      @options["--notebook"] || File.basename(File.expand_path('.'))
+      @options["<notebook>"] || @options["--notebook"] || File.basename(File.expand_path('.'))
     end
 
     def resolve_filename
@@ -66,14 +97,16 @@ module ReOrg
       Time.at(@org[:time]).strftime("#{slug}-%s")
     end
 
+    def current_dir
+      File.expand_path("#{@org[:path]}/current", File.dirname('.'))
+    end
+
     def prepare_directories
-      current_dir = File.expand_path('./orgs/current', File.dirname('.'))
+      @org[:path] = File.expand_path(ENV['ORG_NOTEBOOKS_PATH'] || @options["--path"] || '.')
       if not File.exists?(current_dir)
         puts "Creating working dir at `#{current_dir}'".green
         FileUtils.mkdir(current_dir)
       end
-
-      @org[:current_dir] = current_dir
     end
   end
 end
