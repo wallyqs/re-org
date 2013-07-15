@@ -8,9 +8,10 @@ doc = <<OPTIONS
 re-org : A tool to help re-organize your texts written in Org mode
 
 Usage:
-  re-org new <template> [--notebook=<notebook>] [--title=<title>] [--path=<path>]
+  re-org new <template> [--notebook=<notebook>] [--path=<path>] [--title=<title>]
   re-org setup          [--notebook=<notebook>] [--path=<path>]
-  re-org notebook <notebook>    [--path=<path>]
+  re-org status         [--notebook=<notebook>] [--path=<path>]
+  re-org notebook <notebook>                    [--path=<path>]
 
 Options:
 

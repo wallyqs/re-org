@@ -18,15 +18,32 @@ module ReOrg
         new_file
       when @options['notebook']
         reorganize_notebook
+      when @options['status']
+        show_status
+      end
+    end
+
+    def show_status
+      puts "============ CURRENT STATUS ============"
+      org_files = Dir["#{@org[:path]}/current/*"]
+      org_files.each do |org_file|
+        org_content = Orgmode::Parser.new(File.open(org_file).read)
+        if org_content.in_buffer_settings["NOTEBOOK"]
+          puts "Writing for NOTEBOOK: #{org_content.in_buffer_settings["NOTEBOOK"]}".green
+          puts org_content.headlines.first
+        elsif not
+          puts "Without a NOTEBOOK defined: #{org_file}".yellow
+          puts org_content.headlines.first
+        end
       end
     end
 
     def new_file
       @org[:current_dir] = current_dir
+      @org[:time]     = Time.now
       @org[:title]    = @options["--title"] || 'Untitled'
       @org[:template] = @options["<template>"]
       @org[:notebook] = guess_notebook
-      @org[:time]     = Time.now
       @org[:filename] = resolve_filename
       @org[:date]     = Time.at(@org[:time]).strftime("[%Y-%m-%d %a]")
       @org[:file]     = File.expand_path(File.join(@org[:current_dir], "#{@org[:filename]}.org"))
