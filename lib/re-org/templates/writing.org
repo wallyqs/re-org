@@ -1,17 +1,18 @@
 # -*- mode: org -*-
 #+OPTIONS: ^:nil
 #+TITLE: <%= @org[:title] %>
-#+DATE: <%= Time.now.strftime("%Y-%m-%d") %>
+#+DATE:  <%= @org[:date] %>
 #+STARTUP: showeverything
 #+NOTEBOOK: <%= @org[:notebook] %>
 
-* <%= @org[:date] %> 
+* 
   :PROPERTIES:
+  :DATE:     <%= @org[:date] %> 
   :NOTEBOOK: <%= @org[:notebook] %>
   :END:
 
 
-* COMMENT 
+* COMMENT ________
 # Local Variables:
 # eval: (auto-fill-mode t)
 # eval: (progn (goto-line 0)(re-search-forward ":PROPERTIES:") (org-narrow-to-subtree))

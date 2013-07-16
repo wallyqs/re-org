@@ -6,7 +6,12 @@ module ReOrg
   class Command
     def initialize(options)
       @options = options
+
       @org = { }
+      @org[:time] = Time.now
+      @org[:date] = Time.at(@org[:time]).strftime("%Y-%m-%d")
+      @org[:org_format_date] = Time.at(@org[:time]).strftime("[%Y-%m-%d %a]")
+
       prepare_directories
     end
 
@@ -46,12 +51,10 @@ module ReOrg
 
     def new_file
       @org[:current_dir] = current_dir
-      @org[:time]     = Time.now
       @org[:title]    = @options["--title"] || 'Untitled'
       @org[:template] = @options["<template>"]
       @org[:notebook] = guess_notebook
       @org[:filename] = resolve_filename
-      @org[:date]     = Time.at(@org[:time]).strftime("[%Y-%m-%d %a]")
       @org[:file]     = File.expand_path(File.join(@org[:current_dir], "#{@org[:filename]}.org"))
 
       c = 1
@@ -86,7 +89,7 @@ module ReOrg
         # Put files with defined notebook in the right place
         if org_content.in_buffer_settings["NOTEBOOK"] == @org[:notebook]
           # Use the date of the file, otherwise use todays date
-          date = org_content.in_buffer_settings["DATE"] || Time.now.strftime("%Y-%m-%d")
+          date = org_content.in_buffer_settings["DATE"] || @org[:date]
           date_dir = File.join(@org[:path], @org[:notebook], date)
           FileUtils.mkdir_p(date_dir)
           target_location = File.join(date_dir, File.basename(org_file))
