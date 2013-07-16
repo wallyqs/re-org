@@ -38,6 +38,7 @@ cat bin/re-org
 
 #+RESULTS:
 #+BEGIN_EXAMPLE
+#!/usr/bin/env ruby
 # -*- mode: ruby -*-
 require 'docopt'
 require 're-org'
@@ -47,21 +48,26 @@ doc = <<OPTIONS
 re-org : A tool to help re-organize your texts written in Org mode
 
 Usage:
-  re-org new <name>
-  re-org completed
+  re-org new <template> [--notebook=<notebook>] [--path=<path>] [--title=<title>]
+  re-org setup          [--notebook=<notebook>] [--path=<path>]
+  re-org status         [--notebook=<notebook>] [--path=<path>]
+  re-org update-notebook  <notebook>            [--path=<path>] [--force]
+  re-org compile-notebook <notebook>            [--path=<path>] [--title=<title>] [--force]
 
 Options:
 
   -h --help               Show this screen.
   --version               Show this version.
+
 OPTIONS
 
-begin 
+begin
   require "pp"
   cmd = Docopt::docopt(doc)
 rescue Docopt::Exit => e
   puts e.message
 end
+
 exit 1 unless cmd
 
 o = ReOrg::Command.new(cmd)
