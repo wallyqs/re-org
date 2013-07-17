@@ -10,7 +10,7 @@ re-org: A tool to help re-organize your texts written in Org mode
 Usage:
   re-org new <template> [--notebook=<notebook>] [--path=<path>] [--title=<title>]
   re-org setup          [--notebook=<notebook>] [--path=<path>]
-  re-org status         [--notebook=<notebook>] [--path=<path>]
+  re-org status         [--notebook=<notebook>] [--path=<path>] [--count-keywords]
   re-org update         [--notebook=<notebook>] [--path=<path>] [--force]
   re-org compile        [--notebook=<notebook>] [--path=<path>] [--title=<title>] [--force]
 
