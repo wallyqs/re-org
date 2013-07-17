@@ -16,9 +16,9 @@ module ReOrg
         prepare_directories
       when @options['new']
         new_file
-      when @options['update-notebook']
+      when @options['update']
         reorganize_notebook
-      when @options['compile-notebook']
+      when @options['compile']
         compile_notebook
       when @options['status']
         show_status
@@ -27,20 +27,33 @@ module ReOrg
 
     def show_status
       puts "============ CURRENT STATUS ============"
-      summary = Hash.new { |h,k| h[k] = [] }
+      summary = Hash.new { |h,k| h[k] = {} }
+
       org_files = Dir["#{@org[:path]}/current/*"]
       org_files.each do |org_file|
         org_content = Orgmode::Parser.new(File.open(org_file).read)
         if org_content.in_buffer_settings["NOTEBOOK"]
-          summary[org_content.in_buffer_settings["NOTEBOOK"]] << org_content
+          notebook_name = org_content.in_buffer_settings["NOTEBOOK"]
+          summary[notebook_name][:texts]    ||= []
+          summary[notebook_name][:keywords] ||= {}
+          summary[notebook_name][:texts] << org_content
+          keywords = org_content.headlines.map { |h| h.keyword }
+          keywords.each do |k|
+            summary[notebook_name][:keywords][k] ||= 0
+            summary[notebook_name][:keywords][k]  += 1
+          end
         else
           puts "Org file without notebook defined: #{org_file}".yellow
-        end        
+        end
       end
 
-      summary.each_pair do |notebook, orgs|
-        puts "#{orgs.count} writings for '#{notebook}' notebook.".green
-        orgs.each { |o| puts ["\t", o.headlines.first].join('')}
+      summary.each_pair do |notebook, info|
+        puts "#{info[:texts].count} org files for '#{notebook}' notebook.".green
+        info[:keywords].each do |keyword, count|
+          keyword ||= 'NONE'
+          puts "#{keyword}: #{count}"
+        end if @options["--count-keywords"]
+        info[:texts].each { |o| puts ["\t", o.headlines.first].join('')}
       end
     end
 

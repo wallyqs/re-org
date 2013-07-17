@@ -16,4 +16,5 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = ReOrg::VERSION
   gem.add_dependency(%q<docopt>)
+  gem.add_dependency(%q<org-ruby>)
 end
