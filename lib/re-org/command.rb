@@ -48,7 +48,7 @@ module ReOrg
       end
 
       summary.each_pair do |notebook, info|
-        puts "#{info[:texts].count} writings for '#{notebook}' notebook.".green
+        puts "#{info[:texts].count} org files for '#{notebook}' notebook.".green
         info[:keywords].each do |keyword, count|
           keyword ||= 'NONE'
           puts "#{keyword}: #{count}"
