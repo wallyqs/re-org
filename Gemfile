@@ -5,4 +5,6 @@ gemspec
 
 group :development do
   gem 'docopt'
+  gem 'rake'
+  gem 'rspec'
 end
