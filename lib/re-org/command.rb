@@ -16,9 +16,9 @@ module ReOrg
         prepare_directories
       when @options['new']
         new_file
-      when @options['update-notebook']
+      when @options['update']
         reorganize_notebook
-      when @options['compile-notebook']
+      when @options['compile']
         compile_notebook
       when @options['status']
         show_status
