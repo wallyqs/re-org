@@ -4,9 +4,6 @@ require 'org-ruby'
 
 module ReOrg
 
-  TODO_ORGS_DIR = 'todo'
-  DONE_ORGS_DIR = 'done'
-
   class Command
     def initialize(options)
       @options = options
@@ -25,7 +22,7 @@ module ReOrg
       puts "============ CURRENT STATUS ============"
       summary = Hash.new { |h,k| h[k] = {} }
 
-      org_files = Dir["#{@org[:path]}/#{TODO_ORGS_DIR}/*"]
+      org_files = Dir["#{OrgFile.todo_dir}/*"]
       org_files.each do |org_file|
         org_content = Orgmode::Parser.new(File.open(org_file).read)
         if org_content.in_buffer_settings["NOTEBOOK"]
@@ -59,6 +56,7 @@ module ReOrg
                            :notebook => @options["<notebook>"] || @options["--notebook"],
                            :path => @options["--path"]
                          })
+      OrgFile.prepare_directories(@org)
 
       c = 1
       while File.exists?(@org[:file])

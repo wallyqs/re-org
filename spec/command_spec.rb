@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe ReOrg::Command do
-  before(:each) { FileUtils.mkdir_p("#{RESULTS_DIR}/current") }
+  before(:each) { FileUtils.mkdir_p("#{RESULTS_DIR}") }
 
   # Clean up after tests are done
-  after(:each)  { `rm -rf #{RESULTS_DIR}` }
+  after(:each)  { `rm -rf #{RESULTS_DIR}/*` }
 
   context "when using `re-org new`" do 
     before(:all) do
