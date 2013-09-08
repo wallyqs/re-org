@@ -1,36 +1,50 @@
 require 'spec_helper'
 
 describe ReOrg::Command do
-  let(:cmd) do
-    {
-      "new"        => false,
-      "<template>" => nil,
-      "--notebook" => nil,
-      "--path"     => nil,
-      "--title"    => nil,
-      "setup"      => false,
-      "status"     => false,
-      "update"     => false,
-      "--force"    => false,
-      "compile"    => false,
-      "publish"    => false,
-      "--help"     => false,
-      "--version"  => false
-    }
-  end
+  before(:each) { FileUtils.mkdir_p("#{RESULTS_DIR}") }
 
-  it 'should create new writing with notebook and title' do
-    cmd['new']        = true
-    cmd['--notebook'] = 'new-notebook'
-    cmd['--title']    = 'a new title'
-    o = ReOrg::Command.new(cmd)
-    o.execute!
-    orgs = Dir["#{CURRENT_DIR}/*"]
-    orgs.count.should > 0
-  end
+  # Clean up after tests are done
+  after(:each)  { `rm -rf #{RESULTS_DIR}/*` }
 
-  it 'should setup the directories'
-  it 'should update a notebook folder from the contents of current/'
-  it 'should publish the contents from a notebook'
-  it 'should compile the contents from a notebook into a single file'
+  context "when using `re-org new`" do 
+    before(:all) do
+      @test_number = 0
+    end
+
+    before(:each) do
+      @cmd = {
+        "new"        => true,
+        "<template>" => 'writing',
+        "--notebook" => nil,
+        "--title"    => "test-#{@test_number}",
+      }
+      @test_number += 1
+    end
+
+    it 'should create new writing for a notebook with --notebook option' do
+      @cmd['--notebook'] = 'tests'
+      o = ReOrg::Command.new(@cmd)
+      o.execute!
+      orgs = Dir["#{RESULTS_DIR}/todo/*"]
+      orgs.count.should == 1
+    end
+
+    it 'should create new clockfile when the template is choosen' do
+      @cmd['<template>'] = 'clockfile'
+      @cmd['--notebook'] = 'tests'
+      o = ReOrg::Command.new(@cmd)
+      o.execute!
+      orgs = Dir["#{RESULTS_DIR}/todo/*"]
+      orgs.count.should == 1
+    end
+
+    it 'should create new writing with --title option' do
+      @cmd['--notebook'] = 'tests'
+      @cmd['--title']    = 'Testing the title'
+      o = ReOrg::Command.new(@cmd)
+      o.execute!
+      orgs = Dir["#{RESULTS_DIR}/todo/*"]
+      orgs.count.should == 1
+    end
+  end
 end

@@ -1,40 +1,9 @@
 # -*- mode: org -*-
 
 - [X] Create new file with current datetime
-- [X] Put the current writings in =current/= directory
-- [ ] Allow to use different templates
-- [ ] Make it possible to set a =templates/= directory
-- [ ] Completed and organized files go to the =orgs= folder.
-
-* COMMENT
-** Git integration
-
-Probably too much to put things in Git, fun but not needed.
-Haven't thought on a use case for this kind of things.
-
-** OrgRuby integration
-
-This could be interesting, use the library to extract the
-metadata from the texts to organize them better.
-
-** Define what is the purpose of the =orgs/= folder
-
-Hmm... Considering my flow:
-
-I open the same file and put everything there infinitely,
-until the file grows to big and becomes a bit unmantainable.
-Furthermore, I cannot get much insight of my flow from having
-such an unmantainable mess.
-
-I guess Org mode could be a great editor for the actual missing
-features that it is pointing too.
-
-New flow could be:
-
-- Write on a file and clock it during working time.
-
-- During writing, I could publish what I want from
-  the headlines to the OrgHexagon.
-
-- At the end of the day, organize a little bit what I did,
-  by specifying PROPERTIES on the main headlines from the texts.
+- [X] Put the current writings in =todo= directory
+- [X] Allow to use different templates
+- [ ] Make it possible to set a =templates= directory
+- [ ] Completed and organized files go to the =done= folder.
+- [ ] Load an Org mode file, do some changes to it, and then export it again to Org
+- [ ] Add examples to README.org
