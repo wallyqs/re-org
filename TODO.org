@@ -3,7 +3,8 @@
 - [X] Create new file with current datetime
 - [X] Put the current writings in =todo= directory
 - [X] Allow to use different templates
-- [ ] Make it possible to set a =templates= directory
 - [ ] Completed and organized files go to the =done= folder.
+- [ ] Make it possible to set a =templates= directory
 - [ ] Load an Org mode file, do some changes to it, and then export it again to Org
+  + Needs work on this =org-ruby= branch: [[https://github.com/wallyqs/org-ruby/commits/feature/org-exporter][link]]
 - [ ] Add examples to README.org
