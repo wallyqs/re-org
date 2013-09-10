@@ -15,6 +15,8 @@ module ReOrg
         new_file
       when @options['status']
         show_status
+      when (@options['templates'] and not @options['--name'].nil?)
+        cat_template
       when @options['templates']
         show_templates
       end
@@ -61,6 +63,15 @@ module ReOrg
       default_templates.each do |template|
         puts "- #{File.basename(template)}"
       end
+    end
+
+    def cat_template
+      default_template_dir = File.expand_path("templates/", File.dirname(__FILE__))
+      default_templates = Dir["#{default_template_dir}/*"]
+      template_name = default_templates.select { |path| File.basename(path) == @options['--name']}
+      puts File.open(template_name.first).read
+    rescue => e
+      puts "Could not fetch template '#{@options['--name']}'".red
     end
 
     def new_file

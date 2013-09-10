@@ -54,6 +54,7 @@ describe ReOrg::Command do
     end
 
     it 'should display the currently installed templates' do
+      pending
       o = ReOrg::Command.new(@cmd)
       o.execute!
     end
