@@ -15,11 +15,14 @@ module ReOrg
         new_file
       when @options['status']
         show_status
+      when @options['templates']
+        show_templates
       end
     end
 
     def show_status
-      puts "============ CURRENT STATUS ============"
+      puts '* Current Status'.yellow
+      puts ''
       summary = Hash.new { |h,k| h[k] = {} }
 
       org_files = Dir["#{OrgFile.todo_dir}/*"]
@@ -41,12 +44,22 @@ module ReOrg
       end
 
       summary.each_pair do |notebook, info|
-        puts "#{info[:texts].count} org files for '#{notebook}' notebook.".green
+        puts "- #{info[:texts].count} org files for '#{notebook}' notebook".green
         info[:keywords].each do |keyword, count|
           keyword ||= 'NONE'
           puts "#{keyword}: #{count}"
         end if @options["--count-keywords"]
         info[:texts].each { |o| puts ["\t", o.headlines.first].join('')}
+      end
+    end
+
+    def show_templates
+      puts '* Default Templates'.yellow
+      puts ''
+      default_template_dir = File.expand_path("templates/", File.dirname(__FILE__))
+      default_templates = Dir["#{default_template_dir}/*"]
+      default_templates.each do |template|
+        puts "- #{File.basename(template)}"
       end
     end
 
