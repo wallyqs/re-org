@@ -32,8 +32,8 @@ module ReOrg
     end
 
     def resolve_filename
-      slug = slugify(@options[:notebook] || @options[:title])
-      Time.at(@options[:time]).strftime("#{slug}-%s")
+      slug = slugify(@options[:title] || @options[:notebook])
+      Time.at(@options[:time]).strftime("%Y-%m-%d-#{slug}")
     end
 
     def slugify(name)
@@ -53,8 +53,15 @@ module ReOrg
       File.expand_path(ENV['ORG_NOTEBOOKS_PATH'] || '.')
     end
 
+    # FIXME: There should be a todo dir and a done dir
     def self.todo_dir
-      File.expand_path("#{self.path}/#{TODO_ORGS_DIR}", File.dirname('.'))
+      # Detect that we are on a Jekyll site and use _posts
+      if File.exists?(File.expand_path('_config.yml', File.dirname('.'))) \
+        and Dir.exists?('_posts')
+        File.expand_path('_posts', File.dirname('.'))
+      else
+        File.expand_path("#{self.path}/#{TODO_ORGS_DIR}", File.dirname('.'))
+      end
     end
   end
 end
