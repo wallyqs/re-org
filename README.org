@@ -10,69 +10,107 @@ to re-organize the files in a less chaotic manner.
 
 ** Installation
 
-Add this line to your application's Gemfile:
+=re-org= is distributed using =rubygems=:
 
-#+BEGIN_SRC sh
-    gem 're-org'
-#+END_SRC
-
-And then execute:
-
-#+BEGIN_SRC sh
-    $ bundle
-#+END_SRC
-
-Or install it yourself as:
-
-#+BEGIN_SRC sh
-    $ gem install re-org
-#+END_SRC
+#+begin_src sh
+$ gem install re-org
+#+end_src
 
 ** Usage
 
-This library uses ~docopt~ so these are self-documenting:
+The idea here is to have a pair of ~todo~ and ~done~ folders.
+Writings that are still in progress would go into the ~todo~ folder
+and those that are considered as finished can go into the ~done~ directory.
 
-#+BEGIN_SRC sh :results output
-cat bin/re-org
-#+END_SRC
+Let's say that we want to create a new writing:
 
-#+RESULTS:
-#+BEGIN_EXAMPLE
-#!/usr/bin/env ruby
-# -*- mode: ruby -*-
-require 'docopt'
-require 're-org'
+#+begin_src sh
+$ re-org new writing
+#+end_src
 
-doc = <<OPTIONS
+This would create a file at =todo/2013-12-09-november.org= with the
+following contents below that we can use to just start writing:
 
-re-org : A tool to help re-organize your texts written in Org mode
+#+begin_src org
+  # -*- mode: org -*-
+  ,#+OPTIONS:      ^:nil
+  ,#+TITLE:        November
+  ,#+DATE:         2013-12-09
+  ,#+STARTUP:      showeverything
+  ,#+NOTEBOOK:     re-org
+  
+  ,* 
+    :PROPERTIES:
+    :DATE:     2013-12-09 
+    :NOTEBOOK: re-org
+    :END:
+  
+  ,* COMMENT ________
+  # Local Variables:
+  # eval: (auto-fill-mode t)
+  # eval: (progn (goto-line 0)(re-search-forward ":PROPERTIES:") (org-narrow-to-subtree))
+  # End:
+#+end_src
 
-Usage:
-  re-org new <template> [--notebook=<notebook>] [--path=<path>] [--title=<title>]
-  re-org setup          [--notebook=<notebook>] [--path=<path>]
-  re-org status         [--notebook=<notebook>] [--path=<path>]
-  re-org update-notebook  <notebook>            [--path=<path>] [--force]
-  re-org compile-notebook <notebook>            [--path=<path>] [--title=<title>] [--force]
+That above is using the ~writing~ template that I like using for
+starting a new text that I don't usually would publish.
 
-Options:
+We can inspect at the available templates as follows:
 
-  -h --help               Show this screen.
-  --version               Show this version.
+#+begin_src sh
+    $ re-org templates
+    
+    * Default Templates
+    
+    - clockfile.org (default)
+    - jekyll-post.org       (default)
+    - notebook.org  (default)
+    - writing.org   (default)
+    
+    $ re-org templates --name=writing.org
+  # -*- mode: org -*-
+  ,#+OPTIONS: ^:nil
+  ,#+TITLE: <%= @org[:title] %>
+  ,#+DATE:  <%= @org[:date] %>
+  ,#+STARTUP: showeverything
+  ,#+NOTEBOOK: <%= @org[:notebook] %>
+  
+  ,* 
+    :PROPERTIES:
+    :DATE:     <%= @org[:date] %> 
+    :NOTEBOOK: <%= @org[:notebook] %>
+    :END:
+  
+  
+  ,* COMMENT ________
+  # Local Variables:
+  # eval: (auto-fill-mode t)
+  # eval: (progn (goto-line 0)(re-search-forward ":PROPERTIES:") (org-narrow-to-subtree))
+  # End:
+#+end_src
 
-OPTIONS
+A more interesting would be when preparing a Jekyll blog post.
+~re-org~ currently detects whether the project is a Jekyll project or
+not by checking whether a =_config.yml= exists at the =APP_ROOT=.
+When using Jekyll, ~re-org~ expects that the name of the folders 
+would be ~_drafts~ and ~_posts~.
 
-begin
-  require "pp"
-  cmd = Docopt::docopt(doc)
-rescue Docopt::Exit => e
-  puts e.message
-end
+We can use the included template for Jekyll like this:
 
-exit 1 unless cmd
+#+begin_src sh
+re-org new jekyll-post --title=using-jekyll-and-org-mode
+#+end_src
 
-o = ReOrg::Command.new(cmd)
-o.execute!
-#+END_EXAMPLE
+...and this would create a file at =_drafts/2013-12-06-using-jekyll-and-org-mode=
+
+#+begin_src org
+  ,#+title:         Using jekyll and org mode
+  ,#+date:          2013-12-09
+  ,#+layout:        post
+  ,#+category:      posts
+#+end_src
+
+Other ideas are still a work in progress at this point.
 
 ** Contributing
 
