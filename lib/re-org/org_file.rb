@@ -3,8 +3,8 @@ module ReOrg
 
     attr_accessor :options
 
-    TODO_ORGS_DIR = 'todo'
-    DONE_ORGS_DIR = 'done'
+    DEFAULT_TODO_ORGS_DIR = 'todo'
+    DEFAULT_DONE_ORGS_DIR = 'done'
 
     def initialize(opts={})
       @options = opts
@@ -13,6 +13,7 @@ module ReOrg
       @options[:date]            = Time.at(@options[:time]).strftime("%Y-%m-%d")
       @options[:org_format_date] = org_format_date(@options[:time])
       @options[:todo_dir]      ||= OrgFile.todo_dir
+      @options[:done_dir]      ||= OrgFile.done_dir
       @options[:notebook]      ||= File.basename(File.expand_path('.'))
       @options[:filename]        = resolve_filename
       @options[:file]            = File.expand_path(File.join(@options[:todo_dir], "#{@options[:filename]}.org"))
@@ -53,14 +54,24 @@ module ReOrg
       File.expand_path(ENV['ORG_NOTEBOOKS_PATH'] || '.')
     end
 
-    # FIXME: There should be a todo dir and a done dir
+    # FIXME: There should be a todo dir and a done dir?
     def self.todo_dir
+      # Detect that we are on a Jekyll site and use _drafts
+      if File.exists?(File.expand_path('_config.yml', File.dirname('.'))) \
+        and Dir.exists?('_drafts')
+        File.expand_path('_drafts', File.dirname('.'))
+      else
+        File.expand_path("#{self.path}/#{DEFAULT_TODO_ORGS_DIR}", File.dirname('.'))
+      end
+    end
+
+    def self.done_dir
       # Detect that we are on a Jekyll site and use _posts
       if File.exists?(File.expand_path('_config.yml', File.dirname('.'))) \
         and Dir.exists?('_posts')
         File.expand_path('_posts', File.dirname('.'))
       else
-        File.expand_path("#{self.path}/#{TODO_ORGS_DIR}", File.dirname('.'))
+        File.expand_path("#{self.path}/#{DEFAULT_DONE_ORGS_DIR}", File.dirname('.'))
       end
     end
   end
