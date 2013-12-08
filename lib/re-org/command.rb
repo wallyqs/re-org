@@ -5,6 +5,9 @@ require 'org-ruby'
 module ReOrg
 
   class Command
+
+    CUSTOM_TEMPLATES_DIRS = ['templates', '_templates']
+
     def initialize(options)
       @options = options
     end
@@ -61,7 +64,15 @@ module ReOrg
       default_template_dir = File.expand_path("templates/", File.dirname(__FILE__))
       default_templates = Dir["#{default_template_dir}/*"]
       default_templates.each do |template|
-        puts "- #{File.basename(template)}"
+        puts "- #{File.basename(template)}\t(default)"
+      end
+
+      CUSTOM_TEMPLATES_DIRS.each do |template_dir|
+        if Dir.exists?(template_dir)
+          Dir["#{template_dir}/*"].each do |template|
+            puts "- #{File.basename(template)}\t(found at #{template_dir}/)"
+          end
+        end
       end
     end
 
@@ -89,7 +100,7 @@ module ReOrg
         @org[:file]     = File.expand_path(File.join(@org[:todo_dir], "#{@org[:filename]}.org"))
       end
       template =  @org[:template] || 'writing'
-      template_file = File.expand_path("templates/#{template}.org", File.dirname(__FILE__))
+      template_file = find_template(template)
       if not File.exists?(template_file)
         puts "Could not find template `#{template}.org' at #{template_file}".red
         exit 1
@@ -99,6 +110,17 @@ module ReOrg
       File.open(@org[:file], 'w') {|f| f.puts content }
       puts content.yellow if ENV['DEBUG']
       puts "Created a new writing at `#{@org[:file]}'".green
-    end    
+    end
+
+    private
+    def find_template(template)
+      CUSTOM_TEMPLATES_DIRS.each do |template_dir|
+        if Dir.exists?(template_dir) and File.exists?(File.join(template_dir, "#{template}.org"))
+          return File.expand_path(File.join(template_dir, "#{template}.org"))
+        end
+      end
+
+      return File.expand_path(File.join('templates', "#{template}.org"), File.dirname(__FILE__))
+    end
   end
 end
