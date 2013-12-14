@@ -8,11 +8,12 @@ module ReOrg
 
     def initialize(opts={})
       @options = opts
+
       @options[:title]         ||= 'Untitled'
       @options[:time]            = Time.now
       @options[:date]            = Time.at(@options[:time]).strftime("%Y-%m-%d")
       @options[:org_format_date] = org_format_date(@options[:time])
-      @options[:todo_dir]      ||= OrgFile.todo_dir
+      @options[:todo_dir]      ||= @options[:path] || OrgFile.todo_dir
       @options[:done_dir]      ||= OrgFile.done_dir
       @options[:notebook]      ||= File.basename(File.expand_path('.'))
       @options[:filename]        = resolve_filename

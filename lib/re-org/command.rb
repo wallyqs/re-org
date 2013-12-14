@@ -89,9 +89,9 @@ module ReOrg
       @org = OrgFile.new({ :title => @options["--title"],
                            :template => @options["<template>"],
                            :notebook => @options["<notebook>"] || @options["--notebook"],
-                           :path => @options["--path"]
+                           :path     => @options["--path"]
                          })
-      OrgFile.prepare_directories(@org)
+      OrgFile.prepare_directories(@org) unless @options["--path"]
 
       c = 1
       while File.exists?(@org[:file])
