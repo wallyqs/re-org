@@ -67,7 +67,7 @@ module ReOrg
         puts "- #{File.basename(template)}\t(default)"
       end
 
-      CUSTOM_TEMPLATES_DIRS.each do |template_dir|
+      templates_dirs.each do |template_dir|
         if Dir.exists?(template_dir)
           Dir["#{template_dir}/*"].each do |template|
             puts "- #{File.basename(template)}\t(found at #{template_dir}/)"
@@ -114,13 +114,22 @@ module ReOrg
 
     private
     def find_template(template)
-      CUSTOM_TEMPLATES_DIRS.each do |template_dir|
+      templates_dirs.each do |template_dir|
         if Dir.exists?(template_dir) and File.exists?(File.join(template_dir, "#{template}.org"))
           return File.expand_path(File.join(template_dir, "#{template}.org"))
         end
       end
 
       return File.expand_path(File.join('templates', "#{template}.org"), File.dirname(__FILE__))
+    end
+
+    def templates_dirs
+      tdir = CUSTOM_TEMPLATES_DIRS
+      if ENV['ORG_TEMPLATES_DIR']
+        tdir << File.expand_path(ENV['ORG_TEMPLATES_DIR'])
+      end
+
+      tdir
     end
   end
 end
