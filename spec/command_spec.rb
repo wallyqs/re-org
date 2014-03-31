@@ -46,6 +46,50 @@ describe ReOrg::Command do
     end
   end
 
+  context "when using `re-org new jekyll-post`" do
+    before(:each) do
+      @cmd = {
+        "new"        => true,
+        "<template>" => 'jekyll-post',
+        "--title"    => "test-#{$test_number}",
+      }
+    end
+
+    it 'should create a new jekyll-post with the --title option' do
+      o = ReOrg::Command.new(@cmd)
+      o.execute!
+      orgs = Dir["#{@dir}/todo/*"]
+      orgs.count.should == 1
+    end
+
+    it 'should create a new jekyll-post with an arbitrary date given the --date option' do
+      @cmd['--date']    = '2014-03-29'
+      o = ReOrg::Command.new(@cmd)
+      o.execute!
+      orgs = Dir["#{@dir}/todo/*"]
+      orgs.count.should == 1
+      orgs.first.should =~ /2014-03-29/
+    end
+
+    it 'should create a new jekyll-post with a layout set by --layout option' do
+      @cmd['--layout']    = 'main'
+      o = ReOrg::Command.new(@cmd)
+      o.execute!
+      orgs = Dir["#{@dir}/todo/*"]
+      orgs.count.should == 1
+      File.open(orgs.first).read().should =~ /\#\+layout\:        main/
+    end
+
+    it 'should create a new jekyll-post with a category set by --category option' do
+      @cmd['--category']    = 'food'
+      o = ReOrg::Command.new(@cmd)
+      o.execute!
+      orgs = Dir["#{@dir}/todo/*"]
+      orgs.count.should == 1
+      File.open(orgs.first).read().should =~ /\#\+category\:      food/
+    end
+  end
+
   context "when using `re-org templates`" do 
     before(:each) do
       @cmd = {

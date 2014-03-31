@@ -11,7 +11,7 @@ module ReOrg
 
       @options[:title]         ||= 'Untitled'
       @options[:time]            = Time.now
-      @options[:date]            = Time.at(@options[:time]).strftime("%Y-%m-%d")
+      @options[:date]          ||= Time.at(@options[:time]).strftime("%Y-%m-%d")
       @options[:org_format_date] = org_format_date(@options[:time])
       @options[:todo_dir]      ||= @options[:path] || OrgFile.todo_dir
       @options[:done_dir]      ||= OrgFile.done_dir
@@ -35,7 +35,7 @@ module ReOrg
 
     def resolve_filename
       slug = slugify(@options[:title] || @options[:notebook])
-      Time.at(@options[:time]).strftime("%Y-%m-%d-#{slug}")
+      @options[:date] ? "#{@options[:date]}-#{slug}" : Time.at(@options[:time]).strftime("%Y-%m-%d-#{slug}")
     end
 
     def slugify(name)

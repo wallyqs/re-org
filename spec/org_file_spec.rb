@@ -7,7 +7,7 @@ describe ReOrg::OrgFile do
   end
 
   it 'should create date in org format' do
-    date = Time.at(1377411362)
+    date = Time.at(1377411362).utc
     @org.org_format_date(date).should == '[2013-08-25 Sun]'
   end
 end
