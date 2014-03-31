@@ -86,7 +86,10 @@ module ReOrg
     end
 
     def new_file
-      @org = OrgFile.new({ :title => @options["--title"],
+      @org = OrgFile.new({ :category => @options["--category"],
+                           :date => @options["--date"],
+                           :title => @options["--title"],
+                           :layout => @options["--layout"],
                            :template => @options["<template>"],
                            :notebook => @options["<notebook>"] || @options["--notebook"],
                            :path     => @options["--path"]
@@ -96,7 +99,7 @@ module ReOrg
       c = 1
       while File.exists?(@org[:file])
         c += 1
-        @org[:filename] = Time.at(@org[:time]).strftime("%Y-%m-%d-%s-#{c}")
+        @org[:filename] = @org[:date] ? "#{@org[:date]}-#{c}" : Time.at(@org[:time]).strftime("%Y-%m-%d-%s-#{c}")
         @org[:file]     = File.expand_path(File.join(@org[:todo_dir], "#{@org[:filename]}.org"))
       end
       template =  @org[:template] || 'writing'
